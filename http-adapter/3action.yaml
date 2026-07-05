@@ -1,0 +1,24 @@
+例3） 国が日本かつチャネルグループが Organic Search の新規ユーザー数
+action>: GetGA4Report
+  provider: ga_*****
+  propertyId: 12345
+  startDate: '2023-03-01'
+  endDate: '2023-03-03'
+  metrics: sessions
+  dimensions: 'date, sessionDefaultChannelGroup'
+  metricFilter: ''
+  dimensionFilter:
+    filter:
+      fieldName: sessionDefaultChannelGroup
+      stringFilter:
+        matchType: CONTAINS
+        value: organic
+        caseSensitive: false
+  pageSize: 1000
+  private: false
+  meta:
+    display:
+      provider:
+        type: chip
+        label: 'Google Analytics (example@example.com)'
+        icon: googleanalytics
