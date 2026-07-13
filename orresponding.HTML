@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGB Color Mixer</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            transition: background-color 0.3s ease; 
+            color: #333; 
+            margin: 0;
+            padding: 20px;
+        }
+        .controls { 
+            margin: 20px auto; 
+            padding: 20px; 
+            background: rgba(255,255,255,0.85); 
+            border-radius: 8px; 
+            max-width: 400px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .slider-group { margin-bottom: 20px; }
+        .ddg { 
+            width: 100%; 
+            height: 50px; 
+            margin: 10px 0; 
+            border-radius: 4px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+        h2 { text-align: center; font-family: monospace; }
+        button { 
+            padding: 8px 12px; 
+            margin-top: 5px; 
+            cursor: pointer; 
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+        button:hover { background: #e9e9e9; }
+    </style>
+</head>
+<body>
+    <h2>#000000</h2>
+    
+    <div class="controls">
+        <div class="slider-group">
+            <div id="divRed">RED = 0</div>
+            <input type="range" id="red" min="0" max="255" value="0">
+            <button onclick="promptForColor('Red', document.getElementById('red'))">Set Red via Prompt</button>
+        </div>
+        <div class="slider-group">
+            <div id="divGreen">GREEN = 0</div>
+            <input type="range" id="green" min="0" max="255" value="0">
+            <button onclick="promptForColor('Green', document.getElementById('green'))">Set Green via Prompt</button>
+        </div>
+        <div class="slider-group">
+            <div id="divBlue">BLUE = 0</div>
+            <input type="range" id="blue" min="0" max="255" value="0">
+            <button onclick="promptForColor('Blue', document.getElementById('blue'))">Set Blue via Prompt</button>
+        </div>
+        
+        <button onclick="getYourColor()" style="width: 100%; margin-top: 10px;">Get My Color Hex</button>
+    </div>
+
+    <div class="ddg">Complementary Red</div>
+    <div class="ddg">Complementary Green</div>
+    <div class="ddg">Complementary Blue</div>
+
+    <!-- Hidden element to satisfy the original getYourColor() logic -->
+    <div id="rgb" style="display:none;"><span>#000000</span></div>
+</body>
+</html>
