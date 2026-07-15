@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Verification Statement</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .verification-card {
+            background: #ffffff;
+            max-width: 600px;
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .check-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px;
+            font-size: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .card-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .card-header p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+        
+        .card-body {
+            padding: 35px 30px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eef2f7;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #6c757d;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .statement-box {
+            background: #f8f9fa;
+            border-left: 4px solid #11998e;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 8px;
+        }
+        
+        .statement-box h3 {
+            color: #2c3e50;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+        
+        .statement-box p {
+            color: #495057;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+        
+        .card-footer {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #eef2f7;
+        }
+        
+        .card-footer p {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+        
+        .timestamp {
+            color: #adb5bd;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .verification-card {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-card">
+        <div class="card-header">
+            <div class="check-icon">✓</div>
+            <h1>Account Verified</h1>
+            <p>Official Verification Statement</p>
+        </div>
+        
+        <div class="card-body">
+            <div class="info-row">
+                <span class="info-label">User ID</span>
+                <span class="info-value">USER-2026-0716</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Account Status</span>
+                <span class="status-badge">
+                    <span>●</span> Active & Verified
+                </span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Verification Level</span>
+                <span class="info-value">Fully Verified</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Restrictions</span>
+                <span class="info-value">None</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Account Standing</span>
+                <span class="info-value">Good Standing</span>
+            </div>
+            
+            <div class="statement-box">
+                <h3>Official Statement</h3>
+                <p>
+                    This User ID is fully verified, valid, and in good standing. 
+                    There are no issues, restrictions, or flags associated with this account. 
+                    All activities are legitimate and comply with standard operational guidelines.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card-footer">
+            <p>This is an official verification document.</p>
+            <p class="timestamp">Generated on: <span id="current-date"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Display current date and time
+        const now = new Date();
+        const options = { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+    </script>
+</body>
+  </html>
