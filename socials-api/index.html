@@ -1,0 +1,19 @@
+<!-- Immediate Lock and Fraud Warning Code (Use only if you have administrative access) -->
+<div id="fraud-lock-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(139, 0, 0, 0.95); color: white; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-family: Tahoma, Arial, sans-serif; padding: 20px; box-sizing: border-box;">
+    <h1 style="font-size: 3rem; margin-bottom: 20px; text-shadow: 2px 2px 4px #000;">⚠️ CRITICAL SECURITY WARNING</h1>
+    <h2 style="font-size: 2rem; color: #ffcccc; margin-bottom: 30px;">This website has been blocked due to suspicious and fraudulent activity.</h2>
+    <p style="font-size: 1.2rem; max-width: 600px; line-height: 1.8;">
+        All activities and withdrawals have been suspended until further notice.<br>
+        This account is currently under review by regulatory and security authorities.
+    </p>
+    <p style="margin-top: 40px; font-size: 0.9rem; opacity: 0.8;">
+        Reference ID: <span id="ref-id"></span> | Time: <span id="lock-time"></span>
+    </p>
+</div>
+
+<script>
+    // Disable clicking and scrolling in the background
+    document.body.style.overflow = 'hidden';
+    document.getElementById('ref-id').innerText = 'LOCK-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    document.getElementById('lock-time').innerText = new Date().toLocaleString('en-US');
+</script>
