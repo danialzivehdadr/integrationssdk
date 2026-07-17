@@ -1,124 +1,54 @@
-# Token socials & media upload API
 
-## API access limitations
+---
 
-This API is only available for partners. Please contact marketing@dextools.io to become partner and to request a API key.
+## 📡 Endpoints
 
-## API specs
+### 1. Update Token Social Information
+**`POST /v1/token`**
 
-## POST `/v1/token`
+Creates or updates the social media profiles, media assets, and repository links associated with a specific token.
 
-### Description
+#### Request Body Parameters
+| Field | Type | Required | Description & Constraints |
+| :--- | :--- | :---: | :--- |
+| `chain` | String | **Yes** | The blockchain identifier (e.g., `"eth"`, `"bnb"`). |
+| `address` | String | **Yes** | The contract address of the token to update. |
+| `creationTransactionHash` | String | No | The transaction hash of the token's creation. *(Note: Only applicable and processed for **EVM** chains)*. |
+| `socials` | Object | No | Parent object containing all social, media, and repository data. |
+| `socials.description` | String | No | A brief description of the token to be displayed on DEXTools. |
+| `socials.email` | String | No | Official contact email address. |
+| `socials.logo` | String | No | Logo image as a Base64 string or public URL. <br>⚠️ **Max Dimensions:** 250x250 px \| **Max File Size:** 200 KB |
+| `socials.banner` | String | No | Banner image as a Base64 string or public URL. <br>⚠️ **Max Dimensions:** 600x200 px \| **Max File Size:** 1024 KB |
+| `socials.twitter` | String | No | Official X (Twitter) profile URL. |
+| `socials.telegram` | String | No | Official Telegram channel or group URL. |
+| `socials.discord` | String | No | Official Discord server invite URL. |
+| `socials.facebook` | String | No | Official Facebook page URL. |
+| `socials.youtube` | String | No | Official YouTube channel URL. |
+| `socials.instagram` | String | No | Official Instagram profile URL. |
+| `socials.reddit` | String | No | Official Reddit community URL. |
+| `socials.tiktok` | String | No | Official TikTok profile URL. |
+| `socials.website` | Array | No | Array of official website URLs (e.g., `["https://example.com"]`). |
+| `socials.repos` | Object | No | Parent object for source code repository information. |
+| `socials.repos.github` | Array | No | Array of GitHub repository URLs. |
+| `socials.repos.bitbucket`| Array | No | Array of Bitbucket repository URLs. |
 
-This endpoint is useful to update social info of your token.
-
-### URL
-`/v1/token`
-
-### HTTP Method
-`POST`
-
-### Headers
-`X-API-Key: YOUR_API_KEY`
-
-### Body fields
-
-| Field                                    | Type   | Required | Description                                                   |
-|------------------------------------------|--------|----------|---------------------------------------------------------------|
-| `chain`                                  | String | Yes      | Chain.                                                        |
-| `address`                                | String | Yes      | Token to update socials.                                      |
-| `creationTransactionHash`                | String | No       | Creation transaction hash of token creation. (Only **EVM**)   |
-| `socials`                                | Object | No       | Object that contains socials to update.                       |
-| `socials.description`                    | String | No       | Description to show in DEXTools.                              |
-| `socials.email`                          | String | No       | Email.                                                        |
-| `socials.logo`                           | String | No       | Logo in BASE 64 or URL, MAX SIZE: 250x250, MAX WEIGHT: 200KB   |
-| `socials.banner`                         | String | No       | BANNER in BASE 64 or URL, MAX SIZE: 600X200. MAX WEIGHT: 1024KB|
-| `socials.twitter`                        | String | No       | X profile URL.                                                |
-| `socials.telegram`                       | String | No       | Telegram channel URL.                                         |
-| `socials.discord`                        | String | No       | Discord channel URL.                                          |
-| `socials.facebook`                       | String | No       | Facebook URL.                                                 |
-| `socials.youtube`                        | String | No       | Youtube channel URL.                                          |
-| `socials.instagram`                      | String | No       | Instagram URL.                                                |
-| `socials.reddit`                         | String | No       | Reddit URL.                                                   |
-| `socials.tiktok`                         | String | No       | Tiktok URL.                                                   |
-| `socials.website[]`                      | Array  | No       | Array with website URL.                                       |
-| `socials.repos`                          | Object | No       | Object with repositories info                                 |
-| `socials.repos.github[]`                  | Array  | No       | Github URLs.                                                 |
-| `socials.repos.bitbucket[]`               | Array  | No       | Bitbucket URLs.                                              |
-
-### Body example of a request
-
+#### Example Request
 ```json
 {
-  "chain": "ether",
+  "chain": "eth",
   "address": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
   "creationTransactionHash": "0x2afae7763487e60b893cb57803694810e6d3d136186a6de6719921afd7ca304a",
   "socials": {
-    "description": "string",
-    "email": "string",
-    "logo": "string",
-    "banner": "string",
-    "twitter": "string",
-    "telegram": "string",
-    "discord": "string",
-    "facebook": "string",
-    "youtube": "string",
-    "instagram": "string",
-    "reddit": "string",
-    "tiktok": "string",
-    "website": [ "string" ],
+    "description": "Official description of the token project.",
+    "email": "contact@example.com",
+    "logo": "https://example.com/assets/logo.png",
+    "banner": "https://example.com/assets/banner.png",
+    "twitter": "https://twitter.com/example",
+    "telegram": "https://t.me/example",
+    "website": [ "https://example.com" ],
     "repos": {
-      "github": [ "string" ],
-      "bitbucket": [ "string" ]
+      "github": [ "https://github.com/example/repo" ],
+      "bitbucket": []
     }
   }
 }
-```
-
-### Responses
-
-| Code   | Description                               | 
-| -------|-------------------------------------------|
-| 200    | Returns if token has been created/updated |
-| 400 | Bad Request|
-|403 | Missing or invalid authorization header|
-
-
-## GET `/v1/token/:chain/:address`
-
-### Description
-
-This endpoint is useful to check if token has socials info updated or not
-
-### URL
-`/v1/token/:chain/:address`
-
-### Parameters
-| Field                                    | Type   | Required | Description               |
-|------------------------------------------|--------|----------|---------------------------|
-| `chain`                                  | String | Yes      | Chain.                    |
-| `address`                                | String | Yes      | Token to check socials.   |
-
-### HTTP Method
-`GET`
-
-### Example response
-```
-{
-    "statusCode": 200,
-    "data": {
-        "existingSocialsInfo": true
-    }
-}
-```
-
-### Headers
-`X-API-Key: YOUR_API_KEY`
-
-### Responses
-
-| Code | Description                                                                          | 
-|------|--------------------------------------------------------------------------------------|
-| 200  | Returns existingSocialsInfo: true/false depends on if token has the socials updated  |
-| 400  | Bad Request                                                                          |
-| 403  | Missing or invalid authorization header                                              |
