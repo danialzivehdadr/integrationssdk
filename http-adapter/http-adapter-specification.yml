@@ -1,610 +1,26 @@
-openapi: 3.0.3
-info:
-  title: DEX/Blockchain integration API
-  description: |-
-    HTTP API specification that any blockchain or DEX must provide (via API server) in order to get integrated in DEXTools.
-    DEXTools will consume this API to index all trading data. Please contact with DEXTools support for more info.
-
-    For a Blockchain-level integration, multiple DEX data can be provided with one URL (e.g. dextools-api.mychain.com) 
-    and the `/exchange` endpoint must be implemented.
-
-    Otherwise, for a DEX-level integration, each DEX must provide a separated URL (e.g. dextools-api.one-dex.com, dextools-api.second-dex.com)
-
-    DEXTools will consume the API requesting each block as fast as possible and querying additional data to provided endpoints.
-
-  termsOfService: https://info.dextools.io/legal-notice/
-  contact:
-    name: DEXTools contact
-    url: https://info.dextools.io/#contact
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.0.1
-externalDocs:
-  description: Find out more about OpenAPI
-  url: https://www.openapis.org/
-servers:
-  - url: 'http://example.exchange.com/dextools'
-tags:
-  - name: core
-    description: List of core endpoints to implement by the exchanges
-
-paths:
-  /latest-block:
-    get:
-      tags:
-        - core
-      summary: Latest block
-      description: |-
-        Returns the latest block processed in the blockchain/DEX.
-
-        This endpoint is used to limit the range of events requested during the process of blocks in real time.
-
-        It's mandatory that this endpoint returns a block only when all events of that block have been processed and are
-        available at the _events_ endpoint. If not, DEXTools might loose some events and they won't be available ever in the
-        platform.
-
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfBlock'
-              example:
-                block:
-                  blockNumber: 3262737
-                  blockTimestamp: 1722317170
-        '429':
-          description: 'Too may requests'
-          $ref: '#/components/responses/ErrorTooManyRequests'
-        '500':
-          description: 'Internal server error'
-          $ref: '#/components/responses/ErrorInternal'
-  /block:
-    get:
-      tags:
-        - core
-      summary: Block by number or timestamp
-      description: |-
-        Returns a specific block using either the number of the block or its timestamp.
-
-        For timestamp searching, this endpoint should return the youngest block with the timestamp less than or equal
-        to the requested one.
-
-        If none of the parameters are requested, this endpoint must return a 400 error.
-
-        If both parameters are requested, number option takes precedence.
-
-        **NOTE**: The timestamp option is required only for blockchains with sharding or any other kind of partition,
-        where different partitions handle different block numbers.
-
-      parameters:
-        - name: number
-          description: Number of the requested block
-          in: query
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-          example: 3262733
-        - name: timestamp
-          description: |-
-            Timestamp in seconds of the requested block. If no block exists with that exact timestamp,
-            this endpoin must return the immediately previous one.
-          in: query
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-          example: 1722601427
-      responses:
-        '200':
-          description: 'OK'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfBlock'
-              example:
-                block:
-                  blockNumber: 3262737
-                  blockTimestamp: 1722317170
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfError'
-              example:
-                - code: 400
-                  message: Invalid parameters
-                  issues:
-                    - param: number
-                      code: invalid
-                      message: Block number must be an integer value
-        '404':
-          description: Not found
-          $ref: '#/components/responses/ErrorNotFound'
-        '429':
-          description: 'Too may requests'
-          $ref: '#/components/responses/ErrorTooManyRequests'
-        '500':
-          description: 'Internal server error'
-          $ref: '#/components/responses/ErrorInternal'
-  /asset:
-    get:
-      tags:
-        - core
-      summary: Token by id
-      description: Returns details of a given token by its address
-      parameters:
-        - name: id
-          in: query
-          description: Address of the target token
-          schema:
-            type: string
-          example: lzvjb-wyaaa-aaaam-qarua-cai
-          required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfAsset'
-              example:
-                asset:
-                  id: lzvjb-wyaaa-aaaam-qarua-cai
-                  name: BOX DIP-20
-                  symbol: BOX
-                  totalSupply: '1008423.949810'
-                  circulatingSupply: '1008423.949810'
-                  holdersCount: 12235
-        '400':
-          description: 'Bad request'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfError'
-              example:
-                - code: 400
-                  message: Missing parameter
-                  issues:
-                    - param: id
-                      code: required
-                      message: Id parameter is required
-        '404':
-          description: 'Not found'
-          $ref: '#/components/responses/ErrorNotFound'
-        '429':
-          description: 'Too may requests'
-          $ref: '#/components/responses/ErrorTooManyRequests'
-        '500':
-          description: 'Internal server error'
-          $ref: '#/components/responses/ErrorInternal'
-  /asset/holders:
-    get:
-      tags:
-        - core
-      summary: Paginated list of holders of a token by its id
-      description: |-
-        Returns a list of holders of a given token.
-
-        This list must be sorted in descending order of importance, starting with the holders owning the largest number of tokens and ending with those owning the smallest number of tokens.
-
-        If the requested page exceeds the number of holders of the token, this endpoint must return an empty list of holders.
-      parameters:
-        - name: id
-          in: query
-          description: Address of the target token
-          schema:
-            type: string
-          example: lzvjb-wyaaa-aaaam-qarua-cai
-          required: true
-        - name: page
-          in: query
-          description: Number of page to return used in pagination. It's value must be 0 by default (first page)
-          schema:
-            type: integer
-            format: int32
-            minimum: 0
-            default: 0
-          example: 2
-          required: false
-        - name: pageSize
-          in: query
-          description: Size of the page to return. It's value must be 10 by default
-          schema:
-            type: integer
-            format: int32
-            minimum: 10
-            maximum: 50
-            default: 10
-          example: 25
-          required: false
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfAssetHolders'
-              example:
-                asset:
-                  id: lzvjb-wyaaa-aaaam-qarua-cai
-                  totalHoldersCount: 125
-                  holders:
-                    - address: '0x000000000000084e91743124a982076c59f10084'
-                      quantity: 252234
-                    - address: '0x0000000000003f5e74c1ba8a66b48e6f3d71ae82'
-                      quantity: 12344
-                    - address: '0xaaaebe6fe48e54f431b0c390cfaf0b017d09d42d'
-                      quantity: 10
-        '400':
-          description: 'Bad request'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfError'
-              example:
-                - code: 400
-                  message: Missing parameter
-                  issues:
-                    - param: id
-                      code: required
-                      message: Id parameter is required
-        '404':
-          description: 'Not found'
-          $ref: '#/components/responses/ErrorNotFound'
-        '429':
-          description: 'Too may requests'
-          $ref: '#/components/responses/ErrorTooManyRequests'
-        '500':
-          description: 'Internal server error'
-          $ref: '#/components/responses/ErrorInternal'
-
-  /exchange:
-    get:
-      tags:
-        - core
-      summary: DEX info by factory address or id
-      description: Return details of a given DEX by its factory address or alternative id
-      parameters:
-        - name: id
-          in: query
-          description: Address of the factory address
-          schema:
-            type: string
-          example: lzvjb-wyaaa-aaaam-qarua-cai
-          required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfExchange'
-              example:
-                exchange:
-                  factoryAddress: lzvjb-wyaaa-aaaam-qarua-cai
-                  name: BOX DIP-20
-                  logoURL: 'https://mydex.com/logo.png'
-        '400':
-          description: 'Bad request'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfError'
-              example:
-                - code: 400
-                  message: Missing parameter
-                  issues:
-                    - param: id
-                      code: required
-                      message: Id parameter is required
-        '404':
-          description: 'Not found'
-          $ref: '#/components/responses/ErrorNotFound'
-        '429':
-          description: 'Too may requests'
-          $ref: '#/components/responses/ErrorTooManyRequests'
-        '500':
-          description: 'Internal server error'
-          $ref: '#/components/responses/ErrorInternal'
-
-
-  /pair:
-    get:
-      tags:
-        - core
-      summary: Pair by id
-      description: Returns pair details (aka pool) by its address
-      parameters:
-        - name: id
-          in: query
-          description: Address of the target pair
-          schema:
-            type: string
-          example: qi26q-6aaaa-aaaap-qapeq-cai:utozz-siaaa-aaaam-qaaxq-cai
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfPair'
-              example:
-                pair:
-                  id: qi26q-6aaaa-aaaap-qapeq-cai:utozz-siaaa-aaaam-qaaxq-cai
-                  asset0Id: qi26q-6aaaa-aaaap-qapeq-cai
-                  asset1Id: utozz-siaaa-aaaam-qaaxq-cai
-                  createdAtBlockNumber: 255592
-                  createdAtBlockTimestamp: 1662454363134
-                  createdAtTxnId: '0x3e668'
-                  feeBps: 30
-                  factoryAddress: 3xwpq-ziaaa-aaaah-qcn4a-cai
-        '400':
-          description: 'Bad request'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfError'
-              example:
-                - code: 400
-                  message: Missing parameter
-                  issues:
-                    - param: id
-                      code: required
-                      message: Id parameter is required
-        '404':
-          description: 'Not found'
-          $ref: '#/components/responses/ErrorNotFound'
-        '429':
-          description: 'Too may requests'
-          $ref: '#/components/responses/ErrorTooManyRequests'
-        '500':
-          description: 'Internal server error'
-          $ref: '#/components/responses/ErrorInternal'
-
-  /events:
-    get:
-      tags:
-        - core
-      summary: Events
-      description: List of events occured in a range of blocks
-      parameters:
-        - name: fromBlock
-          description: First block (included) of the range requested
-          in: query
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-          example: 39092564
-          required: true
-        - name: toBlock
-          description: Last block (included) of the range requested
-          in: query
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-          example: 39092564
-          required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfEvents'
-              example:
-                events:
-                  - block:
-                      blockNumber: 216773
-                      blockTimestamp: 1654010041
-                    txnId: '0x3a78fd'
-                    txnIndex: 216675
-                    eventIndex: 216675
-                    maker: 'gforl-dm7ty-dstlf-enaa5-xd474-k4tlm-xxfoq-fgg6x-omjk4-te3mv-xqe'
-                    pairId: rd6wb-lyaaa-aaaaj-acvla-cai:utozz-siaaa-aaaam-qaaxq-cai
-                    eventType: creation
-                  - block:
-                      blockNumber: 216775
-                      blockTimestamp: 1654011041
-                    txnId: '0x34ec7'
-                    txnIndex: 216775
-                    eventIndex: 216775
-                    maker: 'gforl-dm7ty-dstlf-enaa5-xd474-k4tlm-xxfoq-fgg6x-omjk4-te3mv-xqe'
-                    pairId: rd6wb-lyaaa-aaaaj-acvla-cai:utozz-siaaa-aaaam-qaaxq-cai
-                    eventType: swap
-                    asset0In: '1.00000000'
-                    asset1Out: '0.00604151'
-                    reserves:
-                      asset0: '10049651.98319796'
-                      asset1: '60897.81801559'
-                  - block:
-                      blockNumber: 216600
-                      blockTimestamp: 1653906150
-                    txnId: '0x34e18'
-                    txnIndex: 216600
-                    eventIndex: 216600
-                    maker: 'lau2u-xs5m2-gi63l-y7ywo-iipoi-k6bkt-mpq5p-prkns-2iewe-wnoxr-uae'
-                    pairId: aanaa-xaaaa-aaaah-aaeiq-cai:utozz-siaaa-aaaam-qaaxq-cai
-                    eventType: exit
-                    amount0: '19.966298246356'
-                    amount1: '1.19089177'
-                    reserves:
-                      asset0: '828412.583047021879'
-                      asset1: '49410.74804357'
-                  - block:
-                    blockNumber: 216616
-                    blockTimestamp: 1653918697
-                    txnId: '0x34e28'
-                    txnIndex: 216616
-                    eventIndex: 216616
-                    maker: 'lkqmh-5vihe-t5x5j-smuot-vitei-tgfyx-losfh-bbud4-fp2rq-353dj-yqe'
-                    pairId: 'rd6wb-lyaaa-aaaaj-acvla-cai:utozz-siaaa-aaaam-qaaxq-cai'
-                    eventType': 'join'
-                    amount0: '82.49587604'
-                    amount1: '0.49999999'
-                    reserves:
-                      asset0: '49831.30008799'
-                      asset1: '302.02297663'
-        '400':
-          description: 'Bad request'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseOfError'
-              example:
-                - code: 400
-                  message: Invalid parameters
-                  issues:
-                    - param: fromBlock
-                      code: integer
-                      message: fromBlock parameter must be an integer value
-                    - param: toBlock
-                      code: positive
-                      message: toBlock parameter must be a positive value
-        '404':
-          description: 'Not found'
-          $ref: '#/components/responses/ErrorNotFound'
-        '429':
-          description: 'Too may requests'
-          $ref: '#/components/responses/ErrorTooManyRequests'
-        '500':
-          description: 'Internal server error'
-          $ref: '#/components/responses/ErrorInternal'
-
-components:
-  schemas:
-    Block:
-      type: object
-      description: Block schema
-      properties:
-        blockNumber:
-          type: integer
-          format: int64
-          description: Number of the block
-          minimum: 0
-          example: 327637
-        blockTimestamp:
-          type: integer
-          format: int64
-          minimum: 0
-          description: Timestamp (in seconds) the block was confirmed at
-          example: 1722317170
-      required:
-        - blockNumber
-        - blockTimestamp
-    Asset:
-      type: object
-      description: Token schema
-      properties:
-        id:
-          type: string
-          description: Address of the token
-          example: lzvjb-wyaaa-aaaam-qarua-cai
-        name:
-          type: string
-          description: Name of the token
-          example: BOX DIP-20
-        symbol:
-          type: string
-          description: Symbol of the token
-          example: BOX
-        totalSupply:
-          type: string
-          description: Total supply of the token at current time
-          pattern: '^\d+(?:\.\d+)$'
-          example: '1008423.949810'
-        circulatingSupply:
-          type: string
-          description: Circulating supply of the token at current time
-          pattern: '^\d+(?:\.\d+)$'
-          example: '1008423.949810'
-        holdersCount:
-          type: integer
-          format: int64
-          minimum: 0
-          description: Total number of holders of the token
-          example: 1008423
-    AssetHolders:
-      type: object
-      description: List of token holders schema
-      properties:
-        id:
-          type: string
-          description: Address of the token
-          example: lzvjb-wyaaa-aaaam-qarua-cai
-        totalHoldersCount:
-          type: integer
-          format: int64
-          minimum: 0
-          description: Total number of holders owning the requested token
-          example: 255
-        holders:
-          type: array
-          description: List of holders owning the token, sorted in descending order of importance.
-          items:
-            $ref: '#/components/schemas/AssetHolder'
-      required:
-        - id
-        - totalHoldersCount
-        - holders
-    AssetHolder:
-      type: object
-      description: Holder of tokens schema
-      properties:
-        address:
-          type: string
-          description: Address of the holder
-          example: '0x000000000000084e91743124a982076c59f10084'
-        quantity:
-          type: integer
-          format: int64
-          minimum: 0
-          description: Number of tokens held by this address
-          example: 1234122
-      required:
-        - address
-        - quantity
-    Pair:
-      type: object
-      description: Pair schema
-      properties:
-        id:
-          type: string
-          description: Address of the pair
-          example: qi26q-6aaaa-aaaap-qapeq-cai:utozz-siaaa-aaaam-qaaxq-cai
-        asset0Id:
-          type: string
-          description: Address of the first token of the pair
-          example: qi26q-6aaaa-aaaap-qapeq-cai
-        asset1Id:
-          type: string
-          description: Address of the second token of the pair
+        tion: Address of the second token of the pair
           example: utozz-siaaa-aaaam-qaaxq-cai
         createdAtBlockNumber:
           type: integer
           format: int64
-          description: Number of block the pair was created at
-          minimum: 0
+          description: Block number when the pair was created
           example: 255592
         createdAtBlockTimestamp:
           type: integer
           format: int64
-          description: Timestamp (in seconds) of the block the pair was created at
-          minimum: 0
-          example: 16662454363
+          description: Timestamp when the pair was created
+          example: 1662454363134
         createdAtTxnId:
           type: string
-          description: Hash of the transaction the pair was created at
-          example: 0x3e668
+          description: Transaction ID when the pair was created
+          example: '0x3e668'
+        feeBps:
+          type: integer
+          description: Fee in basis points
+          example: 30
         factoryAddress:
           type: string
-          description: Address of the smart contract used to create the pair
+          description: Address of the factory that created the pair
           example: 3xwpq-ziaaa-aaaah-qcn4a-cai
       required:
         - id
@@ -613,7 +29,27 @@ components:
         - createdAtBlockNumber
         - createdAtBlockTimestamp
         - createdAtTxnId
+        - feeBps
         - factoryAddress
+    Exchange:
+      type: object
+      description: Exchange schema
+      properties:
+        factoryAddress:
+          type: string
+          description: Address of the factory
+          example: lzvjb-wyaaa-aaaam-qarua-cai
+        name:
+          type: string
+          description: Name of the exchange
+          example: BOX DIP-20
+        logoURL:
+          type: string
+          description: URL to the exchange logo
+          example: 'https://mydex.com/logo.png'
+      required:
+        - factoryAddress
+        - name
     Event:
       type: object
       description: Event schema
@@ -622,218 +58,153 @@ components:
           $ref: '#/components/schemas/Block'
         txnId:
           type: string
-          description: Hash of the transaction the event belongs to
-          example: '0x34ec7'
+          description: Transaction ID
+          example: '0x3a78fd'
         txnIndex:
           type: integer
-          format: int32
-          description: Index of the transaction the event belongs to
-          minimum: 0
-          example: 216775
+          format: int64
+          description: Index of the transaction in the block
+          example: 216675
         eventIndex:
           type: integer
-          format: int32
-          description: Index of the event inside the block. This will be used to sort events and must be unique for all events inside a block.
-          minimum: 0
-          example: 216775
+          format: int64
+          description: Index of the event in the transaction
+          example: 216675
         maker:
           type: string
-          description: Address of the wallet who request the transaction
+          description: Address of the maker
           example: 'gforl-dm7ty-dstlf-enaa5-xd474-k4tlm-xxfoq-fgg6x-omjk4-te3mv-xqe'
         pairId:
           type: string
-          description: Address of the pair involved in the transaction
+          description: Address of the pair
           example: rd6wb-lyaaa-aaaaj-acvla-cai:utozz-siaaa-aaaam-qaaxq-cai
         eventType:
           type: string
-          description: Type of event (creation -> Pair created; swap -> Swap; join -> Add liquidity; exit -> Remove liquidity)
+          description: Type of the event
           enum:
             - creation
             - swap
             - join
             - exit
-        amount0:
-          type: string
-          description: 'Only for joins and exits: Number of tokens of asset0 added to the pool'
-          pattern: '^\d+(?:\.\d+)$'
-          example: '1.00000000'
-        amount1:
-          type: string
-          description: 'Only for joins and exits: Number of tokens of asset1 added to the pool'
-          pattern: '^\d+(?:\.\d+)$'
-          example: '0.00604151'
+          example: swap
         asset0In:
           type: string
-          description: 'Only for swaps: Number of tokens of asset0 sold'
-          pattern: '^\d+(?:\.\d+)$'
+          description: Amount of asset0 swapped in
           example: '1.00000000'
         asset1Out:
           type: string
-          description: 'Only for swaps: Number of tokens of asset1 bought'
-          pattern: '^\d+(?:\.\d+)$'
+          description: Amount of asset1 swapped out
           example: '0.00604151'
         asset0Out:
           type: string
-          description: 'Only for swaps: Number of tokens of asset0 bought'
-          pattern: '^\d+(?:\.\d+)$'
-          example: '1.00000000'
+          description: Amount of asset0 swapped out
+          example: '0.00000000'
         asset1In:
           type: string
-          description: 'Only for swaps: Number of tokens of asset1 sold'
-          pattern: '^\d+(?:\.\d+)$'
-          example: '0.00604151'
+          description: Amount of asset1 swapped in
+          example: '0.00000000'
+        amount0:
+          type: string
+          description: Amount of asset0 involved in join/exit
+          example: '19.966298246356'
+        amount1:
+          type: string
+          description: Amount of asset1 involved in join/exit
+          example: '1.19089177'
         reserves:
           type: object
-          description: 'Only for joins, exists and swaps: Reserves of each token remaining after the event has been executed'
+          description: Reserves of the pair after the event
           properties:
             asset0:
               type: string
-              description: Reserves of token asset0
-              pattern: '^\d+(?:\.\d+)$'
+              description: Reserve of asset0
               example: '10049651.98319796'
             asset1:
               type: string
-              description: Reserves of token asset1
-              pattern: '^\d+(?:\.\d+)$'
+              description: Reserve of asset1
               example: '60897.81801559'
-          required:
-            - asset0
-            - asset1
-      required:
-        - block
-        - txnId
-        - txnIndex
-        - eventIndex
-        - maker
-        - pairId
-        - eventType
-
-    Exchange:
-      type: object
-      description: Exchange schema
-      properties:
-        factoryAddress:
-          type: string
-          description: Address of the factory contract
-          example: lzvjb-wyaaa-aaaam-qarua-cai
-        name:
-          type: string
-          description: Name of the exchange
-          example: Uniswap V99
-        logoURL:
-          type: string
-          description: URL of exchange Logo
-          example: 'https://mydex.com/logo.png'
-      required:
-        - factoryAddress
-        - name
-
     ResponseOfBlock:
       type: object
-      description: Response of the endpoints that return a single block
       properties:
         block:
           $ref: '#/components/schemas/Block'
-      required:
-        - block
     ResponseOfAsset:
       type: object
-      description: Response of the endpoints that return a single token
       properties:
         asset:
           $ref: '#/components/schemas/Asset'
-      required:
-        - asset
     ResponseOfAssetHolders:
       type: object
-      description: Response of the endpoint that return a list of holders of a token
       properties:
         asset:
           $ref: '#/components/schemas/AssetHolders'
-      required:
-        - asset
     ResponseOfExchange:
       type: object
-      description: Response of the endpoints that return a single exchange
       properties:
         exchange:
           $ref: '#/components/schemas/Exchange'
-      required:
-        - exchange        
     ResponseOfPair:
       type: object
-      description: Response of the endpoints that return a single pair
       properties:
         pair:
           $ref: '#/components/schemas/Pair'
-      required:
-        - pair
     ResponseOfEvents:
       type: object
-      description: Response of the /events endpoint
       properties:
         events:
           type: array
           items:
             $ref: '#/components/schemas/Event'
-      required:
-        - events
-
-    Issue:
-      type: object
-      description: Schema of error details
-      properties:
-        code:
-          type: string
-        param:
-          type: string
-        message:
-          type: string
-      required:
-        - message
-
     ResponseOfError:
-      type: object
-      description: Schema of all error responses
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        issues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Issue'
-      required:
-        - code
-        - message
-
+      type: array
+      items:
+        type: object
+        properties:
+          code:
+            type: integer
+            example: 400
+          message:
+            type: string
+            example: Invalid parameters
+          issues:
+            type: array
+            items:
+              type: object
+              properties:
+                param:
+                  type: string
+                  example: number
+                code:
+                  type: string
+                  example: invalid
+                message:
+                  type: string
+                  example: Block number must be an integer value
   responses:
     ErrorNotFound:
-      description: Not Found
+      description: Not found
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ResponseOfError'
           example:
-            code: '404'
-            message: 'Block/Asset/Pair not found.'
+            - code: 404
+              message: Not found
     ErrorTooManyRequests:
-      description: Too Many requests
+      description: Too many requests
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ResponseOfError'
           example:
-            code: '429'
-            message: 'Rate limit occured handling request'
+            - code: 429
+              message: Too many requests
     ErrorInternal:
-      description: Internal error
+      description: Internal server error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ResponseOfError'
           example:
-            code: '500'
-            message: 'Server was not able to return a response. Try later'
-
+            - code: 500
+              message: Internal server error
