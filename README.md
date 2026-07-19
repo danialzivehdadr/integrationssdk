@@ -157,3 +157,68 @@ Current available integration options are:
 
 **Last Updated:** July 13, 2026
 **Version:** 1.1.0
+
+```tex
+================================================================================
+                          CEASE AND DESIST NOTICE
+                 COPYRIGHT INFRINGEMENT & DEMAND FOR TAKEDOWN
+================================================================================
+
+TO:      The Management of [Insert Infringing Website Name/URL Here]
+FROM:    Danial Zivehdar
+DATE:    July 19, 2026
+SUBJECT: URGENT: Unauthorized Use of Intellectual Property and Demand for 
+         Immediate Removal
+
+Dear Sir/Madam,
+
+This is a formal legal notice to inform you that your website has engaged in 
+the unauthorized copying, replication, and use of the design, patterns, links, 
+and content belonging to me, Danial Zivehdar. 
+
+COMPREHENSIVE RIGHTS RESERVATION:
+Please be formally notified that under the website's governing terms and 
+applicable intellectual property laws, I retain exclusive and absolute ownership 
+of ALL rights, titles, and interests regarding this project. This includes, 
+but is not limited to, the website contract/terms, all designs, templates, 
+hyperlinks, source codes, and absolutely ALL associated content and digital 
+assets (hereinafter referred to as "the Protected Assets"). Any unauthorized 
+use, reproduction, or distribution of these Protected Assets constitutes a 
+material breach of copyright, contractual terms, and digital property laws.
+
+Therefore, you are hereby formally demanded to take the following actions 
+within 12 hours [or specify 12 days] from the receipt of this notice:
+
+1. IMMEDIATE CESSATION: Immediately cease and desist from any further use, 
+   display, or distribution of the Protected Assets.
+   
+2. COMPLETE DATA SANITIZATION: Permanently delete and purge all copied files 
+   and assets from your servers, virtual environments, mobile device storage, 
+   and any other associated data storage systems without exception.
+   
+3. WEBSITE TAKEDOWN: Immediately shut down or disable access to the infringing 
+   sections of your website until the violations are fully resolved and a 
+   final legal determination is made.
+
+Please be advised that failure to comply with this notice within the stipulated 
+timeframe will leave me with no choice but to pursue all available legal 
+remedies. This includes, but is not limited to, filing formal complaints with 
+the relevant judicial authorities and cyber police, as well as submitting a 
+formal DMCA/copyright infringement report to your Hosting Provider and Domain 
+Registrar to request the immediate suspension and takedown of your entire 
+website.
+
+Furthermore, be advised that no informal guarantees, settlements, or 
+communications will be entertained regarding this matter. Any necessary 
+correspondence will be conducted strictly through official legal channels.
+
+All of my legal rights and remedies are expressly reserved.
+
+Sincerely,
+
+----------------------------------------
+Danial Zivehdar
+Phone: +98 9197159411
+Email: danialzivehdar1992@gmail.com
+----------------------------------------
+================================================================================
