@@ -91,7 +91,7 @@ An iframe based integration example follows:
         <iframe 
             id="dextools-widget"
             title="DEXTools Trading Chart"
-            src="https://www.dextools.io/https:/tradingview.com/&showTradeHistory=true&tvPlatformColor=1e222d&tvPaneColor=131722&headerColor=2962FF">
+            src="https://www.dextools.io/https:/tradingview.com/
         </iframe>
     </div>
 
