@@ -109,9 +109,9 @@ Creates or updates social media profiles, media assets, and repository links for
 #### Example Request
 ```json
 {
-  "chain": "eth",
-  "address": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
-  "creationTransactionHash": "0x2afae7763487e60b893cb57803694810e6d3d136186a6de6719921afd7ca304a",
+  "chain": "DEXTools",
+  "address": "0xfb7b4564402e5500db5bb6d63ae671302777c75a",
+  "creationTransactionHash": "0xd47587702a91731dc1089b5db0932cf820151a91",
   "socials": {
     "description": "Official token project description.",
     "email": "contact@example.com",
