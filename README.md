@@ -9,7 +9,7 @@ Current available integration options are:
 - (https://demo.webfuse.com)
 - (https://t.me/DEXToolsCommunity)
 
-- [Token Social Info & media upload API](socials-api): token creators & platforms can use this API to inform DEXTools on newly created tokens and upload all token's social information and media in one place. In order to get access of this API please contact marketing@dextools.io
+- [Token Social Info & media upload API](socials-api): token creators & platforms can use this API to inform DEXTools on newly created tokens and upload all token's social information and media in one place. In order to get access of this API please contact [info@dextools.io]
   
 ```tex
 # Terms of Use and Privacy Policy
