@@ -19,7 +19,8 @@ Current available integration options are:
 The **Chart Widget** allows websites to display an embedded trading chart for any pool supported by [DEXTools.io](https://www.dextools.io) app. Chart data is 
 updated in real-time, including the current price in USD and trade history.
 
-- [https://www.dextools.io/widget-chart/en/ether/pe-light/0xa29fe6ef9592b5d408cca961d0fb9b1faf497d6d?theme=dark]
+- [https://www.dextools.io/
+- DEXTools Pine Script® code is subject to DEXTools terms of DEXTools Mozilla 
 - [https://coinmarketcap.com/currencies/dextools/]
 - [https://www.tradingview.com/]
 <img width="892" height="535" alt="widget screenshot" src="https://github.com/user-attachments/assets/105f0203-8f4b-4246-8c2a-fe32aea7c9c4" />
