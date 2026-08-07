@@ -1,12 +1,16 @@
 # Integration SDK
 Jion 
+Jion Naem [collaborators on Naem @] `pick wallet up k addres id address`
 - @danialzivehdar
+- @GitHub
 - @tonivicente
 - @Pablo Ojanguren
 - @felix-pandavenes
-- @Engineer
 - @Pentaclezion
+- @Engineer
+- @yanaemons
 - @Bogdan Shumygora
+  `````
 This repository contains different specifications and SDK components that can be implemented or used by a **Blockchain** or **DEX** that want to be integrated in DEXTools 
 
 
