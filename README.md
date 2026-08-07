@@ -1,9 +1,9 @@
 # Integration SDK
 Jion 
-@danialzivehdar
-@tonivicente
-@Pablo Ojanguren
-@felix-pandavenes
+- `@danialzivehdar`
+- `@tonivicente`
+- `@Pablo Ojanguren`
+- `@felix-pandavenes`
 This repository contains different specifications and SDK components that can be implemented or used by a **Blockchain** or **DEX** that want to be integrated in DEXTools 
 
 
