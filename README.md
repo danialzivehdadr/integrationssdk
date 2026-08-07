@@ -4,6 +4,9 @@ Jion
 - @tonivicente
 - @Pablo Ojanguren
 - @felix-pandavenes
+- @Engineer
+- @Pentaclezion
+- @Bogdan Shumygora
 This repository contains different specifications and SDK components that can be implemented or used by a **Blockchain** or **DEX** that want to be integrated in DEXTools 
 
 
